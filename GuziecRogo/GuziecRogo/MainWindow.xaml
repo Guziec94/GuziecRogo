@@ -4,9 +4,59 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:GuziecRogo"
+        xmlns:dg2d="clr-namespace:DataGrid2DLibrary;assembly=DataGrid2DLibrary"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
-    <Grid>
-        
+        Title="GuziecRogo" Width="900" Height="625" 
+        ResizeMode="CanMinimize">
+    <Grid SnapsToDevicePixels="True" Width="920" Height="625" Margin="-5,-5,0,0">
+        <Label x:Name="label1" Content="Szerokość:" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,6,0,0"/>
+        <TextBox x:Name="szerokosc_textBox" HorizontalAlignment="Left" Height="23" Margin="101,10,0,0" TextWrapping="Wrap" Text="3" VerticalAlignment="Top" Width="100" PreviewTextInput="NumberValidationTextBox"/>
+
+        <Label x:Name="label2" Content="Wysokość:" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,34,0,0"/>
+        <TextBox x:Name="wysokosc_textBox" HorizontalAlignment="Left" Height="23" Margin="101,38,0,0" TextWrapping="Wrap" Text="4" VerticalAlignment="Top" Width="100"/>
+
+        <Button x:Name="stworz_tabele" Content="Stwórz tabelę" HorizontalAlignment="Left" VerticalAlignment="Top" Width="191" Margin="10,66,0,0" Click="stworz_tabele_Click"/>
+
+        <Label x:Name="label3" Content="Dobrze:" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,85,0,0"/>
+        <TextBox x:Name="dobrze_textBox" HorizontalAlignment="Left" Height="23" Margin="101,89,0,0" TextWrapping="Wrap" Text="1" VerticalAlignment="Top" Width="100" PreviewTextInput="NumberValidationTextBox"/>
+
+        <Label x:Name="label4" Content="Najlepiej:" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,113,0,0"/>
+        <TextBox x:Name="najlepiej_textBox" HorizontalAlignment="Left" Height="23" Margin="101,117,0,0" TextWrapping="Wrap" Text="2" VerticalAlignment="Top" Width="100" PreviewTextInput="NumberValidationTextBox"/>
+
+        <Label x:Name="label5" Content="Ilość kroków:" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,141,0,0"/>
+        <TextBox x:Name="liczba_krokow_textBox" HorizontalAlignment="Left" Height="23" Margin="101,145,0,0" TextWrapping="Wrap" Text="4" VerticalAlignment="Top" Width="100" PreviewTextInput="NumberValidationTextBox"/>
+
+        <Button x:Name="znajdz_rozwiazanie" Content="Znajdź rozwiazanie" HorizontalAlignment="Left" Margin="10,173,0,0" VerticalAlignment="Top" Width="191" Click="znajdz_rozwiazanie_Click" IsEnabled="False"/>
+
+        <ListBox x:Name="znalezione_rozwiazania" HorizontalAlignment="Left" Height="116" Margin="10,197,0,0" VerticalAlignment="Top" Width="191" IsEnabled="False" SelectionChanged="znalezione_rozwiazania_SelectionChanged"/>
+
+        <Button x:Name="wyswietl_rozwiazanie" Content="Wyświetl rozwiązanie" HorizontalAlignment="Left" Margin="10,318,0,0" VerticalAlignment="Top" Width="191" Height="72" Click="wyswietl_rozwiazanie_Click" IsEnabled="False"/>
+
+        <Label x:Name="label" Content="Label" HorizontalAlignment="Left" Margin="10,395,0,0" VerticalAlignment="Top" Height="140" Width="191"/>
+
+        <dg2d:DataGrid2D HeadersVisibility="None" Name="dataGrid2D" ItemsSource2D="{Binding Int2DList}" Height="550" Width="550" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Disabled" ScrollViewer.CanContentScroll="False" CellEditEnding="dataGrid2D_CellEditEnding" SnapsToDevicePixels="True" Margin="206,10,162,60" HorizontalAlignment="Left" VerticalAlignment="Top" />
+
+        <Label x:Name="label6" Content="Przykładowe puzle:" HorizontalAlignment="Left" Margin="761,6,0,0" VerticalAlignment="Top" Width="125"/>
+        <ListBox x:Name="lista_przykladow" HorizontalAlignment="Left" Height="100" Margin="761,32,0,0" VerticalAlignment="Top" Width="125" SelectionChanged="lista_przykladow_SelectionChanged">
+            <ListBoxItem Name="p1" Content="Przykład 1"/>
+            <ListBoxItem Name="p2" Content="Przykład 2"/>
+            <ListBoxItem Name="p3" Content="Przykład 3"/>
+        </ListBox>
+        <Button x:Name="koloruj_tabele" Content="Koloruj tabelę" HorizontalAlignment="Left" Margin="761,137,0,0" VerticalAlignment="Top" Width="125" Height="32" Click="koloruj_tabele_Click" Visibility="Hidden"/>
     </Grid>
+    <Window.Resources>
+        <Style TargetType="DataGridCell">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type DataGridCell}">
+                        <Grid Background="{TemplateBinding Background}">
+                            <ContentPresenter VerticalAlignment="Center" />
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="TextBlock.TextAlignment" Value="Center" />
+        </Style>
+    </Window.Resources>
 </Window>
+
