@@ -52,7 +52,7 @@ namespace GuziecRogo
                 cell.Background = Brushes.LightGreen;
                 if (dane[wiersz, kolumna] == 0)
                 {
-                    cell.Foreground = Brushes.LightGreen;//puste pole, zerowe
+                    cell.Foreground = Brushes.Black;//puste pole, zerowe
                 }
                 else
                 {
@@ -91,41 +91,22 @@ namespace GuziecRogo
             }
         }
 
-        private void button_Click(object sender, RoutedEventArgs e)
+        private string tablica_prologowa(int[] tablica)
         {
-            /*dataGrid2D.UnselectAllCells();
-           var cos = new DataGridCellInfo(dataGrid2D.Items[1], dataGrid2D.Columns[2]);
-           dataGrid2D.SelectedCells.Add(cos);
-           dataGrid2D.Focus(); */
-            //koloruj_komorke(0, 0, '2');
-
-            /*if (!PlEngine.IsInitialized)
+            string wyjscie = "[";
+            foreach (var liczba in tablica)
             {
-            String[] param = { "-q" };  // suppressing informational and banner messages
-            PlEngine.Initialize(param);
-            PlQuery.PlCall("assert(father(martin, inka))");
-            PlQuery.PlCall("assert(father(uwe, gloria))");
-            PlQuery.PlCall("assert(father(uwe, melanie))");
-            PlQuery.PlCall("assert(father(uwe, ayala))");
-            using (var q = new PlQuery("father(P, C), atomic_list_concat([P,' is_father_of ',C], L)"))
-            {
-            foreach (PlQueryVariables v in q.SolutionVariables)
-                label.Content += v["L"].ToString() + "\n";
-
-            label.Content = "all children from uwe:" + "\n";
-            q.Variables["P"].Unify("uwe");
-            foreach (PlQueryVariables v in q.SolutionVariables)
-                label.Content += v["C"].ToString() + "\n";
+                wyjscie += liczba + ",";
             }
-            PlEngine.PlCleanup();
-            label.Content += "finshed!" + "\n";
-            }*/
+            wyjscie = wyjscie.Substring(0, wyjscie.Length - 1) + "]";
+            return wyjscie;
         }
 
         private void stworz_tabele_Click(object sender, RoutedEventArgs e)
         {
             try
             {
+                znalezione_rozwiazania.Items.Clear();
                 szerokosc = Convert.ToInt32(szerokosc_textBox.Text);
                 wysokosc = Convert.ToInt32(wysokosc_textBox.Text);
                 dataGrid2D.Background = Brushes.White;
@@ -221,6 +202,8 @@ namespace GuziecRogo
 
         private void lista_przykladow_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            znalezione_rozwiazania.Items.Clear();
+            wyswietl_rozwiazanie.IsEnabled = false;
             przyklady test = new przyklady(lista_przykladow.SelectedIndex);
             szerokosc = test.szerokosc;
             wysokosc = test.wysokosc;
@@ -245,7 +228,7 @@ namespace GuziecRogo
 
         private void znajdz_rozwiazanie_Click(object sender, RoutedEventArgs e)
         {
-            try
+            try//sprawdzenie poprawnosci wprowadzonych danych
             {
                 dobry_wynik = int.Parse(dobrze_textBox.Text);
                 najlepszy_wynik = int.Parse(najlepiej_textBox.Text);
@@ -260,44 +243,32 @@ namespace GuziecRogo
                 MessageBox.Show("Wystąpił błąd, możliwości to:\n- podano nieprawidłowe progi punktowe dla tej gry\n- podano zbyt małą liczbę kroków,\n- liczba kroków jest nieparzysta, czyli gra jest nierozwiązywalna\n- liczba kroków jest większa niż liczba pól.");
                 return;
             }
-            int[] dane_z_tabeli = dataGrid2D.ItemsSource2D.Cast<int>().ToArray<int>();
+
+            int[] dane_z_tabeli = dataGrid2D.ItemsSource2D.Cast<int>().ToArray<int>();//załadowanie danych z tabeli do tablicy intów
             dane = new int[wysokosc, szerokosc];
-            int iterator = 0;
-            string lista_prologowa = "[";
-            for (int i = 0; i < wysokosc; i++)//wiersz
-            {
-                lista_prologowa += "[";
-                for (int j = 0; j < szerokosc; j++)//kolumna
-                {
-                    lista_prologowa += dane_z_tabeli[iterator++] + ",";
-                }
-                lista_prologowa = lista_prologowa.Substring(0, lista_prologowa.Length - 1) + "],";
-            }
-            lista_prologowa = lista_prologowa.Substring(0, lista_prologowa.Length - 1) + "]";
-            znalezione_rozwiazania.Items.Clear();
 
-
-            test();
-            //tu można odpalać prologa
             if (!PlEngine.IsInitialized)
             {
-                String sciezka = @"..\..\..\ROGO.pl";
-                String[] param = { "-q -f",sciezka };  // suppressing informational and banner messages
-                PlEngine.Initialize(param);
-                using (var q = new PlQuery("szukaj(2,2,4,10,10,[1,2,3,4],Lista)."))
+                String sciezka = @"..\..\..\ROGO.pl";//ścieżka do pliku ROGO.pl
+                String[] param = { "-q -f",sciezka };//parametry uruchomieniowe prologa
+                PlEngine.Initialize(param);//uruchomienie prologa z wcześniej ustalonymi parametrami
+                String lista_wartosci = tablica_prologowa(dane_z_tabeli);//prologowa lista zawierająca wartości wszystkich pól
+                String zapytanie = "szukaj(" + szerokosc + "," + wysokosc + "," + liczba_krokow + "," + dobry_wynik + "," + najlepszy_wynik + "," + lista_wartosci + ",Lista).";
+                //szukaj(Szerokosc, Wysokosc, LiczbaKrokow, Dobrze, Najlepiej, ListaWartosci, ListaIndeksow).
+                using (var q = new PlQuery(zapytanie))
                 {
-                    String cos = "";
+                    List<string> cos = new List<string>();//jedynie do testów
                     try
                     {
                         foreach (PlQueryVariables v in q.SolutionVariables)
                         {
-                            cos += v["Lista"].ToString()+"\n";
+                            cos.Add(v["Lista"].ToString());
                             znalezione_rozwiazania.Items.Add(v["Lista"].ToString());
                         }
                     }
                     catch(PlException E)
                     {
-                        if(E.Message== "Execution Aborted")
+                        if(E.Message== "Execution Aborted")//poprawne zakończenie - wywoływane z ROGO.pl
                         {
                             label.Content = cos;
                             MessageBox.Show("Koniec");
@@ -310,86 +281,31 @@ namespace GuziecRogo
                 }
                 PlEngine.PlCleanup();
             }
-
             znalezione_rozwiazania.IsEnabled = true;
             wyswietl_rozwiazanie.IsEnabled = true;
         }
 
-        private void test()//funkcja tworzy 2 tablice prologowe: jedna przechowujaca wartosci wierzcholkow, druga przechowujaca krawedzie grafu
-        {
-            int[] dane_z_tabeli = dataGrid2D.ItemsSource2D.Cast<int>().ToArray<int>();
-            string wartosci_wierzcholkow = "[";//lista prologowa
-            string krawedzie_grafu = "";//lista prologowa zawierajaca krawedzie grafu (nie powtarzajace sie - tylko w prawo i w dol)
-            for (int komorka = 0; komorka < dane_z_tabeli.Length - 1; komorka++)
-            {
-                wartosci_wierzcholkow += dane_z_tabeli[komorka] + ", ";
-            }
-            wartosci_wierzcholkow += dane_z_tabeli[dane_z_tabeli.Length - 1] + "]";
-            for (int komorka = 0; komorka < dane_z_tabeli.Length-1; komorka++)//-1 w zakresie, bo nie trzeba sprawdzac ostatniej komorki
-            {
-                if (dane_z_tabeli[komorka] >= 0)//sprawdza czy komorka jest przechodnia
-                {
-                    if (komorka < dane_z_tabeli.Length - szerokosc)
-                    {
-                        if (komorka % szerokosc == szerokosc - 1)//ostatnia komorka w rzedzie
-                        {
-                            if (dane_z_tabeli[komorka + szerokosc] >= 0)//sprawdza czy komorka jest przechodnia
-                            {
-                                krawedzie_grafu += "assert(krawedz(" + komorka + "," + (komorka + szerokosc) + ",1)).";
-                            }
-                        }
-                        else
-                        {
-                            wartosci_wierzcholkow += dane_z_tabeli[komorka] + ", ";
-                            if (dane_z_tabeli[komorka + 1] >= 0)//sprawdza czy komorka jest przechodnia
-                            {
-                                krawedzie_grafu += "assert(krawedz(" + komorka + "," + (komorka + 1) + ",1)).";
-                            }
-                            if (dane_z_tabeli[komorka + szerokosc] >= 0)//sprawdza czy komorka jest przechodnia
-                            {
-                                krawedzie_grafu += "assert(krawedz(" + komorka + "," + (komorka + szerokosc) + ",1)).";
-                            }
-                        }
-                    }
-                    else//odpowiada za ostatni rząd komórek
-                    {
-                        if (dane_z_tabeli[komorka] >= 0)//sprawdza czy komorka jest przechodnia
-                        {
-                            krawedzie_grafu += "assert(krawedz(" + komorka + "," + (komorka + 1) + ",1)).";
-                        }
-                    }
-                }
-            }
-        }
-
-        private void GetCombination(List<int> list)
-        {
-            double count = Math.Pow(2, list.Count);
-            for (int i = 1; i <= count - 1; i++)
-            {
-                string str = Convert.ToString(i, 2).PadLeft(list.Count, '0');
-                for (int j = 0; j < str.Length; j++)
-                {
-                    if (str[j] == '1')
-                    {
-                        Console.Write(list[j]);
-                    }
-                }
-                Console.WriteLine();
-            }
-        }
-
         private void znalezione_rozwiazania_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-
+            if (e.AddedItems.Count > 0)
+            {
+                string do_wyswietlenia = (string)e.AddedItems[0];
+                do_wyswietlenia = do_wyswietlenia.Substring(1, do_wyswietlenia.Length - 2);
+                sciezka_do_wyswietlenia = do_wyswietlenia.Split(',').Select(n => Convert.ToInt32(n)).ToArray();
+            }
         }
 
         private void wyswietl_rozwiazanie_Click(object sender, RoutedEventArgs e)
         {
-            sciezka_do_wyswietlenia = new int[] { 3, 3, 4, 3, 5, 3, 5, 4, 6, 4, 6, 5, 6, 6, 5, 6, 5, 5, 4, 5, 3, 5, 3, 4 };//kolumna, wiersz, kolumna, wiersz, ...
-            for (int i=0;i< sciezka_do_wyswietlenia.Length;i+=2)
+            if (znalezione_rozwiazania.HasItems)
             {
-                koloruj_komorke(sciezka_do_wyswietlenia[i], sciezka_do_wyswietlenia[i +1], '2');
+                int wiersz, kolumna;
+                foreach (int numer_komorki in sciezka_do_wyswietlenia)
+                {
+                    wiersz = numer_komorki / szerokosc;
+                    kolumna = numer_komorki - wiersz * szerokosc;
+                    koloruj_komorke(kolumna, wiersz, '2');
+                }
             }
         }
     }

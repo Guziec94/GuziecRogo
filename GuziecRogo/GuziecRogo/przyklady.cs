@@ -28,6 +28,27 @@ namespace GuziecRogo
             switch (nr_przykladu)
             {
                 case 0:
+                    szerokosc = 2;
+                    wysokosc = 2;
+                    dobry_wynik = 10;
+                    najlepszy_wynik = 10;
+                    liczba_krokow = 4;
+                    dane = new int[2, 2] {
+                    {1,2 },
+                    {4,3 } };
+                    break;
+                case 1:
+                    szerokosc = 3;
+                    wysokosc = 3;
+                    dobry_wynik = 36;
+                    najlepszy_wynik = 36;
+                    liczba_krokow = 8;
+                    dane = new int[3, 3] {
+                    {1,2,3 },
+                    {8,-1,4 },
+                    {7,6,5 } };
+                    break;
+                case 2:
                     szerokosc = 4;
                     wysokosc = 6;
                     dobry_wynik = 2;
@@ -41,7 +62,7 @@ namespace GuziecRogo
                     {-1,0,0,-1},
                     {-1,-1,-1,-1}};
                 break;
-                case 1:
+                case 3:
                     szerokosc = 4;
                     wysokosc = 4;
                     dobry_wynik = 5;
@@ -53,17 +74,7 @@ namespace GuziecRogo
                     {0,1,0,1},
                     {0,0,1,0}};
                 break;
-                case 2:
-                    szerokosc = 3;
-                    wysokosc = 3;
-                    dobry_wynik = 36;
-                    najlepszy_wynik = 36;
-                    liczba_krokow = 8;
-                    dane = new int[3, 3] {
-                    {1,2,3 },
-                    {8,-1,4 },
-                    {7,6,5 } };
-                break;
+
             }
         }
     }
