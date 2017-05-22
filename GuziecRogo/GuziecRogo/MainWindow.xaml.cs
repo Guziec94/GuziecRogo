@@ -244,8 +244,16 @@ namespace GuziecRogo
                 return;
             }
 
+            int iterator = 0;
             int[] dane_z_tabeli = dataGrid2D.ItemsSource2D.Cast<int>().ToArray<int>();//załadowanie danych z tabeli do tablicy intów
             dane = new int[wysokosc, szerokosc];
+            for (int j = 0; j < wysokosc; j++)//wiersz
+            {
+                for (int i = 0; i < szerokosc; i++)//kolumna
+                {
+                    dane[j, i] = dane_z_tabeli[iterator++];
+                }
+            }
 
             if (!PlEngine.IsInitialized)
             {
@@ -255,7 +263,7 @@ namespace GuziecRogo
                 String lista_wartosci = tablica_prologowa(dane_z_tabeli);//prologowa lista zawierająca wartości wszystkich pól
                 String zapytanie = "szukaj(" + szerokosc + "," + wysokosc + "," + liczba_krokow + "," + dobry_wynik + "," + najlepszy_wynik + "," + lista_wartosci + ",Lista).";
                 //szukaj(Szerokosc, Wysokosc, LiczbaKrokow, Dobrze, Najlepiej, ListaWartosci, ListaIndeksow).
-                using (var q = new PlQuery(zapytanie))
+                /*using (var q = new PlQuery(zapytanie))
                 {
                     List<string> cos = new List<string>();//jedynie do testów
                     try
@@ -278,6 +286,28 @@ namespace GuziecRogo
                             MessageBox.Show(E.Message);
                         }
                     }
+                }*/
+                var q = new PlQuery(zapytanie);
+                List<string> cos = new List<string>();//jedynie do testów
+                try
+                {
+                    while (q.NextSolution())
+                    {
+                        cos.Add(q.Variables["Lista"].ToString());
+                        znalezione_rozwiazania.Items.Add(q.Variables["Lista"].ToString());
+                    }
+                }
+                catch (PlException E)
+                {
+                    if (E.Message == "Execution Aborted")//poprawne zakończenie - wywoływane z ROGO.pl
+                    {
+                        label.Content = cos;
+                        MessageBox.Show("Koniec");
+                    }
+                    else
+                    {
+                        MessageBox.Show(E.Message);
+                    }
                 }
                 PlEngine.PlCleanup();
             }
@@ -287,6 +317,7 @@ namespace GuziecRogo
 
         private void znalezione_rozwiazania_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            ((IInvokeProvider)(new ButtonAutomationPeer(koloruj_tabele).GetPattern(PatternInterface‌​.Invoke))).Invoke();
             if (e.AddedItems.Count > 0)
             {
                 string do_wyswietlenia = (string)e.AddedItems[0];

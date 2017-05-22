@@ -74,7 +74,21 @@ namespace GuziecRogo
                     {0,1,0,1},
                     {0,0,1,0}};
                 break;
-
+                case 4:
+                    szerokosc = 5;
+                    wysokosc = 7;
+                    dobry_wynik = 17;
+                    najlepszy_wynik = 21;
+                    liczba_krokow = 12;
+                    dane = new int[7, 5] {
+                    {3,2,0,0,5 },
+                    { 0,0,3,-1,5},
+                    {4,-1,0,0,0 },
+                    {0,5,0,3,0 },
+                    {0,0,0,-1,2 },
+                    {3,-1,4,0,0 },
+                    {5,0,0,3,4 }};
+                break;
             }
         }
     }
