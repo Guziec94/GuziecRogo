@@ -106,7 +106,7 @@ namespace GuziecRogo
         {
             try
             {
-                znalezione_rozwiazania.Items.Clear();
+                znalezione_rozwiazania.ItemsSource = null;
                 szerokosc = Convert.ToInt32(szerokosc_textBox.Text);
                 wysokosc = Convert.ToInt32(wysokosc_textBox.Text);
                 dataGrid2D.Background = Brushes.White;
@@ -202,7 +202,7 @@ namespace GuziecRogo
 
         private void lista_przykladow_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            znalezione_rozwiazania.Items.Clear();
+            znalezione_rozwiazania.ItemsSource = null;
             wyswietl_rozwiazanie.IsEnabled = false;
             przyklady test = new przyklady(lista_przykladow.SelectedIndex);
             szerokosc = test.szerokosc;
@@ -247,7 +247,7 @@ namespace GuziecRogo
             int iterator = 0;
             int[] dane_z_tabeli = dataGrid2D.ItemsSource2D.Cast<int>().ToArray<int>();//załadowanie danych z tabeli do tablicy intów
             dane = new int[wysokosc, szerokosc];
-            for (int j = 0; j < wysokosc; j++)//wiersz
+            for (int j = 0; j < wysokosc; j++)//wierszem 
             {
                 for (int i = 0; i < szerokosc; i++)//kolumna
                 {
@@ -258,37 +258,17 @@ namespace GuziecRogo
             if (!PlEngine.IsInitialized)
             {
                 String sciezka = @"..\..\..\ROGO.pl";//ścieżka do pliku ROGO.pl
-                String[] param = { "-q -f",sciezka };//parametry uruchomieniowe prologa
+                String[] param = { "-q -f", sciezka };//parametry uruchomieniowe prologa
                 PlEngine.Initialize(param);//uruchomienie prologa z wcześniej ustalonymi parametrami
+            }
+            if (PlEngine.IsInitialized)
+            {
                 String lista_wartosci = tablica_prologowa(dane_z_tabeli);//prologowa lista zawierająca wartości wszystkich pól
                 String zapytanie = "szukaj(" + szerokosc + "," + wysokosc + "," + liczba_krokow + "," + dobry_wynik + "," + najlepszy_wynik + "," + lista_wartosci + ",Lista).";
                 //szukaj(Szerokosc, Wysokosc, LiczbaKrokow, Dobrze, Najlepiej, ListaWartosci, ListaIndeksow).
-                /*using (var q = new PlQuery(zapytanie))
-                {
-                    List<string> cos = new List<string>();//jedynie do testów
-                    try
-                    {
-                        foreach (PlQueryVariables v in q.SolutionVariables)
-                        {
-                            cos.Add(v["Lista"].ToString());
-                            znalezione_rozwiazania.Items.Add(v["Lista"].ToString());
-                        }
-                    }
-                    catch(PlException E)
-                    {
-                        if(E.Message== "Execution Aborted")//poprawne zakończenie - wywoływane z ROGO.pl
-                        {
-                            label.Content = cos;
-                            MessageBox.Show("Koniec");
-                        }
-                        else
-                        {
-                            MessageBox.Show(E.Message);
-                        }
-                    }
-                }*/
-                var q = new PlQuery(zapytanie);
-                List<string> cos = new List<string>();//jedynie do testów
+                List<rozwiazanie> cos = new List<rozwiazanie>();//jedynie do testów
+
+                /*var q = new PlQuery(zapytanie);
                 try
                 {
                     while (q.NextSolution())
@@ -296,12 +276,24 @@ namespace GuziecRogo
                         cos.Add(q.Variables["Lista"].ToString());
                         znalezione_rozwiazania.Items.Add(q.Variables["Lista"].ToString());
                     }
+                }*/
+                try
+                {
+                    using (var q = new PlQuery(zapytanie))
+                    {
+                        foreach (PlQueryVariables v in q.SolutionVariables)
+                        {
+                            rozwiazanie znalezione_rozwiazanie = new rozwiazanie(v["Lista"].ToString(), dane_z_tabeli);
+                            cos.Add(znalezione_rozwiazanie);
+                        }
+                    }
                 }
                 catch (PlException E)
                 {
                     if (E.Message == "Execution Aborted")//poprawne zakończenie - wywoływane z ROGO.pl
                     {
-                        label.Content = cos;
+                        cos = cos.OrderBy(x => x.wynik).ThenBy(x => x.sciezka).ToList();
+                        znalezione_rozwiazania.ItemsSource = cos;
                         MessageBox.Show("Koniec");
                     }
                     else
@@ -309,7 +301,7 @@ namespace GuziecRogo
                         MessageBox.Show(E.Message);
                     }
                 }
-                PlEngine.PlCleanup();
+                //PlEngine.PlCleanup();//moze powodowac bledy podczas szybkiego uruchomienia kolejnego zapytania
             }
             znalezione_rozwiazania.IsEnabled = true;
             wyswietl_rozwiazanie.IsEnabled = true;
@@ -320,9 +312,7 @@ namespace GuziecRogo
             ((IInvokeProvider)(new ButtonAutomationPeer(koloruj_tabele).GetPattern(PatternInterface‌​.Invoke))).Invoke();
             if (e.AddedItems.Count > 0)
             {
-                string do_wyswietlenia = (string)e.AddedItems[0];
-                do_wyswietlenia = do_wyswietlenia.Substring(1, do_wyswietlenia.Length - 2);
-                sciezka_do_wyswietlenia = do_wyswietlenia.Split(',').Select(n => Convert.ToInt32(n)).ToArray();
+                sciezka_do_wyswietlenia = ((rozwiazanie)e.AddedItems[0]).sciezka_do_wyswietlenia;
             }
         }
 

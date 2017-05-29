@@ -40,13 +40,13 @@ namespace GuziecRogo
                 case 1:
                     szerokosc = 3;
                     wysokosc = 3;
-                    dobry_wynik = 36;
-                    najlepszy_wynik = 36;
-                    liczba_krokow = 8;
+                    dobry_wynik = 12;
+                    najlepszy_wynik = 28;
+                    liczba_krokow = 4;
                     dane = new int[3, 3] {
                     {1,2,3 },
-                    {8,-1,4 },
-                    {7,6,5 } };
+                    {4,5,6 },
+                    {7,8,9 } };
                     break;
                 case 2:
                     szerokosc = 4;
@@ -61,8 +61,19 @@ namespace GuziecRogo
                     {-1,0,1,-1},
                     {-1,0,0,-1},
                     {-1,-1,-1,-1}};
-                break;
+                    break;
                 case 3:
+                    szerokosc = 3;
+                    wysokosc = 3;
+                    dobry_wynik = 36;
+                    najlepszy_wynik = 36;
+                    liczba_krokow = 8;
+                    dane = new int[3, 3] {
+                    {1,2,3 },
+                    {8,-1,4 },
+                    {7,6,5 } };
+                    break;
+                case 4:
                     szerokosc = 4;
                     wysokosc = 4;
                     dobry_wynik = 5;
@@ -74,7 +85,7 @@ namespace GuziecRogo
                     {0,1,0,1},
                     {0,0,1,0}};
                 break;
-                case 4:
+                case 5:
                     szerokosc = 5;
                     wysokosc = 7;
                     dobry_wynik = 17;

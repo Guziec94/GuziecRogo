@@ -6,9 +6,9 @@
         xmlns:local="clr-namespace:GuziecRogo"
         xmlns:dg2d="clr-namespace:DataGrid2DLibrary;assembly=DataGrid2DLibrary"
         mc:Ignorable="d"
-        Title="GuziecRogo" Width="900" Height="625" 
+        Title="GuziecRogo" Width="775" Height="600" 
         ResizeMode="CanMinimize">
-    <Grid SnapsToDevicePixels="True" Width="920" Height="625" Margin="-5,-5,0,0">
+    <Grid SnapsToDevicePixels="True" Width="795" Height="600" Margin="-5,-5,0,0">
         <Label x:Name="label1" Content="Szerokość:" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,6,0,0"/>
         <TextBox x:Name="szerokosc_textBox" HorizontalAlignment="Left" Height="23" Margin="101,10,0,0" TextWrapping="Wrap" Text="3" VerticalAlignment="Top" Width="100" PreviewTextInput="NumberValidationTextBox"/>
 
@@ -32,17 +32,16 @@
 
         <Button x:Name="wyswietl_rozwiazanie" Content="Wyświetl rozwiązanie" HorizontalAlignment="Left" Margin="10,318,0,0" VerticalAlignment="Top" Width="191" Height="72" Click="wyswietl_rozwiazanie_Click" IsEnabled="False"/>
 
-        <Label x:Name="label" Content="Label" HorizontalAlignment="Left" Margin="10,395,0,0" VerticalAlignment="Top" Height="140" Width="191"/>
+        <dg2d:DataGrid2D HeadersVisibility="None" Name="dataGrid2D" ItemsSource2D="{Binding Int2DList}" Height="550" Width="550" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Disabled" ScrollViewer.CanContentScroll="False" CellEditEnding="dataGrid2D_CellEditEnding" SnapsToDevicePixels="True" Margin="206,10,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" />
 
-        <dg2d:DataGrid2D HeadersVisibility="None" Name="dataGrid2D" ItemsSource2D="{Binding Int2DList}" Height="550" Width="550" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Disabled" ScrollViewer.CanContentScroll="False" CellEditEnding="dataGrid2D_CellEditEnding" SnapsToDevicePixels="True" Margin="206,10,162,60" HorizontalAlignment="Left" VerticalAlignment="Top" />
-
-        <Label x:Name="label6" Content="Przykładowe puzle:" HorizontalAlignment="Left" Margin="761,6,0,0" VerticalAlignment="Top" Width="125"/>
-        <ListBox x:Name="lista_przykladow" HorizontalAlignment="Left" Height="160" Margin="761,32,0,0" VerticalAlignment="Top" Width="125" SelectionChanged="lista_przykladow_SelectionChanged">
+        <Label x:Name="label6" Content="Przykładowe puzle:" HorizontalAlignment="Left" Margin="10,395,0,0" VerticalAlignment="Top" Width="125"/>
+        <ListBox x:Name="lista_przykladow" HorizontalAlignment="Left" Height="134" Margin="10,426,0,0" VerticalAlignment="Top" Width="191" SelectionChanged="lista_przykladow_SelectionChanged">
             <ListBoxItem Name="p1" Content="Przykład 1"/>
             <ListBoxItem Name="p2" Content="Przykład 2"/>
             <ListBoxItem Name="p3" Content="Przykład 3"/>
             <ListBoxItem Name="p4" Content="Przykład 4"/>
             <ListBoxItem Name="p5" Content="Przykład 5"/>
+            <ListBoxItem Name="p6" Content="Przykład 6"/>
         </ListBox>
         <Button x:Name="koloruj_tabele" Content="Koloruj tabelę" HorizontalAlignment="Left" Margin="761,137,0,0" VerticalAlignment="Top" Width="125" Height="32" Click="koloruj_tabele_Click" Visibility="Hidden"/>
     </Grid>
