@@ -27,15 +27,17 @@
         <TextBox x:Name="liczba_krokow_textBox" HorizontalAlignment="Left" Height="23" Margin="101,145,0,0" TextWrapping="Wrap" Text="4" VerticalAlignment="Top" Width="100" PreviewTextInput="NumberValidationTextBox"/>
 
         <Button x:Name="znajdz_rozwiazanie" Content="Znajdź rozwiazanie" HorizontalAlignment="Left" Margin="10,173,0,0" VerticalAlignment="Top" Width="191" Click="znajdz_rozwiazanie_Click" IsEnabled="False"/>
+        
 
-        <ListBox x:Name="znalezione_rozwiazania" HorizontalAlignment="Left" Height="116" Margin="10,197,0,0" VerticalAlignment="Top" Width="191" IsEnabled="False" SelectionChanged="znalezione_rozwiazania_SelectionChanged"/>
+        
+        <ListBox x:Name="znalezione_rozwiazania" HorizontalAlignment="Left" Height="116" Margin="10,245,0,0" VerticalAlignment="Top" Width="191" IsEnabled="False" SelectionChanged="znalezione_rozwiazania_SelectionChanged"/>
 
-        <Button x:Name="wyswietl_rozwiazanie" Content="Wyświetl rozwiązanie" HorizontalAlignment="Left" Margin="10,318,0,0" VerticalAlignment="Top" Width="191" Height="72" Click="wyswietl_rozwiazanie_Click" IsEnabled="False"/>
+        <Button x:Name="wyswietl_rozwiazanie" Content="Wyświetl rozwiązanie" HorizontalAlignment="Left" Margin="10,366,0,0" VerticalAlignment="Top" Width="191" Height="23" Click="wyswietl_rozwiazanie_Click" IsEnabled="False"/>
 
-        <dg2d:DataGrid2D HeadersVisibility="None" Name="dataGrid2D" ItemsSource2D="{Binding Int2DList}" Height="550" Width="550" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Disabled" ScrollViewer.CanContentScroll="False" CellEditEnding="dataGrid2D_CellEditEnding" SnapsToDevicePixels="True" Margin="206,10,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" />
+        <dg2d:DataGrid2D HeadersVisibility="None" Name="dataGrid2D" ItemsSource2D="{Binding Int2DList}" Height="550" Width="550" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Disabled" ScrollViewer.CanContentScroll="False" CellEditEnding="dataGrid2D_CellEditEnding" SnapsToDevicePixels="True" Margin="206,10,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
 
-        <Label x:Name="label6" Content="Przykładowe puzle:" HorizontalAlignment="Left" Margin="10,395,0,0" VerticalAlignment="Top" Width="125"/>
-        <ListBox x:Name="lista_przykladow" HorizontalAlignment="Left" Height="134" Margin="10,426,0,0" VerticalAlignment="Top" Width="191" SelectionChanged="lista_przykladow_SelectionChanged">
+        <Label x:Name="label6" Content="Przykładowe puzle:" HorizontalAlignment="Left" Margin="10,394,0,0" VerticalAlignment="Top" Width="125"/>
+        <ListBox x:Name="lista_przykladow" HorizontalAlignment="Left" Height="136" Margin="10,424,0,0" VerticalAlignment="Top" Width="191" SelectionChanged="lista_przykladow_SelectionChanged">
             <ListBoxItem Name="p1" Content="Przykład 1"/>
             <ListBoxItem Name="p2" Content="Przykład 2"/>
             <ListBoxItem Name="p3" Content="Przykład 3"/>
@@ -44,6 +46,8 @@
             <ListBoxItem Name="p6" Content="Przykład 6"/>
         </ListBox>
         <Button x:Name="koloruj_tabele" Content="Koloruj tabelę" HorizontalAlignment="Left" Margin="761,137,0,0" VerticalAlignment="Top" Width="125" Height="32" Click="koloruj_tabele_Click" Visibility="Hidden"/>
+        <CheckBox x:Name="uproszczone_wyszukiwanie" Content="Uproszczone wyszukiwanie" HorizontalAlignment="Left" Margin="10,197,0,0" VerticalAlignment="Top" ToolTip="Uproszczone wyszukiwanie polega na wyszukiwaniu rozwiązań, które zawierają wskazane (w poniższym polu tekstowym) pole." Click="uproszczone_wyszukiwanie_Click"/>
+        <TextBox x:Name="uproszczone_wyszukiwanie_TextBox" HorizontalAlignment="Left" Height="23" Margin="10,217,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="191" ToolTip="Ręcznie wprowadź numer wybranego pola, z którego ma zacząć się poszukiwanie rozwiązań. Pola numerowane są od 0, od lewego górnego rogu." IsEnabled="False"/>
     </Grid>
     <Window.Resources>
         <Style TargetType="DataGridCell">

@@ -1,5 +1,4 @@
 ?- use_module(library(clpfd)).
-%initialization(set_prolog_flag(clpfd_goal_expansion, false)).
 
 /*
 	zapewnienie odpowiedniej dlugosci listy oraz OstatniElemet=Glowa
@@ -13,26 +12,20 @@ inicjalizuj_liste(Dlugosc, JakasLista):-
 /*
 	sprawdzenie czy pola w liscie znajduja sie obok siebie - pole ponizej lub powyzej rozni sie o szerokosc
 */
-czy_sasiednie([H1,H2],Szerokosc):-
+czy_sasiednie([H1,H2],Szerokosc, Szer):-
 	S1 is H2 - Szerokosc, S2 is H2 - 1, S3 is H2 + 1, S4 is H2 + Szerokosc,
-	
-	X is H1 mod 3,
-	Szer is Szerokosc-1,
+	X is H1 mod Szerokosc,
 	(X = 0 -> member(H1, [S1, S2, S4]);
 	X = Szer -> member(H1, [S1, S3, S4]);
     X \= 0 -> member(H1, [S1, S2, S3, S4])),
-	
 	!.
-czy_sasiednie([H1,H2|T],Szerokosc):-
+czy_sasiednie([H1,H2|T],Szerokosc, Szer):-
 	S1 is H2 - Szerokosc, S2 is H2 - 1, S3 is H2 + 1, S4 is H2 + Szerokosc,
-	
-	X is H1 mod 3,
-	Szer is Szerokosc-1,
+	X is H1 mod Szerokosc,
 	(X = 0 -> member(H1, [S1, S2, S4]);
 	X = Szer -> member(H1, [S1, S3, S4]);
     X \= 0 -> member(H1, [S1, S2, S3, S4])),
-	
-	czy_sasiednie([H2|T],Szerokosc).
+	czy_sasiednie([H2|T],Szerokosc, Szer).
 
 	
 /*
@@ -51,7 +44,7 @@ sprawdz_sume([H|T],ListaWartosci,Suma):-
 	
 	
 /*
-	Funkcja filtrująca indeksy, dla których wartość 2giej listy przyjmuje wartość dodatnią
+	Funkcja filtrująca indeksy, dla których wartość drugiej listy przyjmuje wartość dodatnią
 */
 wybierz_niezerowe([],[],[]).
 wybierz_niezerowe([H|T],[_|T1],S) :-
@@ -62,7 +55,7 @@ wybierz_niezerowe([H|T],[H1|T1],[H1|S]) :-
 	wybierz_niezerowe(T,T1,S).	
 
 /*
-	Funkcja filtrująca indeksy, dla których wartość 2giej listy przyjmuje wartość dodatnią lub zerową
+	Funkcja filtrująca indeksy, dla których wartość drugiej listy przyjmuje wartość dodatnią lub zerową
 */	
 wybierz_nieujemne([],[],[]).
 wybierz_nieujemne([H|T],[_|T1],S) :-
@@ -90,6 +83,7 @@ list_to_domain([H | T], '\\/'(H .. HT, TDomain)) :-
 szukaj(Szerokosc, Wysokosc, LiczbaKrokow, Dobrze, Najlepiej, ListaWartosci, ListaIndeksow):-
 	IloscPol is Szerokosc*Wysokosc,
 	LK is LiczbaKrokow+1,/*LK to długość listy wynikowej, gdzie element pierwszy jest dodany jako ostatni*/
+	Szer is Szerokosc-1,/*Szer jest uzywane w sprawdzaniu sasiedniosci elementow*/
 	inicjalizuj_liste(LK,ListaIndeksow),
 	nth0(0,ListaIndeksow,_,SciezkaBezGlowy),
 		
@@ -104,7 +98,6 @@ szukaj(Szerokosc, Wysokosc, LiczbaKrokow, Dobrze, Najlepiej, ListaWartosci, List
 	list_to_domain(ListaGlow, ZestawGlow),
 	nth0(0,ListaIndeksow,Glowa),
 	Glowa in ZestawGlow,
-	%member(Glowa, ListaGlow),/*przyspiesza, ale zmienia wyjscie - nie znajduje wszystkich rozwiązań*/
 	
 	all_different(SciezkaBezGlowy),
 	
@@ -112,8 +105,31 @@ szukaj(Szerokosc, Wysokosc, LiczbaKrokow, Dobrze, Najlepiej, ListaWartosci, List
 	Suma#>=Dobrze,
 	Suma#=<Najlepiej,
 	
-	czy_sasiednie(ListaIndeksow,Szerokosc).
-	/*
-	labeling([ff,bisect,down], ListaIndeksow)
-	maplist(=<(0),ListaIndeksow)
-	*/
+	czy_sasiednie(ListaIndeksow,Szerokosc, Szer).
+	
+/*
+	Dodatkowa funkcja wywoływana przez GUI umożliwia wyszukiwanie ścieżek rozpoczynających się z podanego pola
+*/	
+szukaj_po_glowie(Szerokosc, Wysokosc, LiczbaKrokow, Dobrze, Najlepiej, ListaWartosci, ListaIndeksow, Glowa):-
+	IloscPol is Szerokosc*Wysokosc,
+	LK is LiczbaKrokow+1,/*LK to długość listy wynikowej, gdzie element pierwszy jest dodany jako ostatni*/
+	Szer is Szerokosc-1,/*Szer jest uzywane w sprawdzaniu sasiedniosci elementow*/
+	inicjalizuj_liste(LK,ListaIndeksow),
+	nth0(0,ListaIndeksow,_,SciezkaBezGlowy),
+		
+	MaxIndeks is IloscPol-1,
+	numlist(0,MaxIndeks,ZakresIndeksow),
+	
+	wybierz_nieujemne(ListaWartosci,ZakresIndeksow,ListaNieujemnych),
+	list_to_domain(ListaNieujemnych,ZestawNieujemnych),
+	ListaIndeksow ins ZestawNieujemnych,/*zapewnienie, że elementy znalezionego rozwiązania nie będą zawierać ujemnych (nieprzechodnich) pól*/
+	
+	nth0(0,ListaIndeksow,Glowa),
+	
+	all_different(SciezkaBezGlowy),
+	
+	sprawdz_sume(SciezkaBezGlowy,ListaWartosci,Suma),
+	Suma#>=Dobrze,
+	Suma#=<Najlepiej,
+	
+	czy_sasiednie(ListaIndeksow,Szerokosc, Szer).

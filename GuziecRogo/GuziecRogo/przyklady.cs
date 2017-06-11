@@ -76,14 +76,14 @@ namespace GuziecRogo
                 case 4:
                     szerokosc = 4;
                     wysokosc = 4;
-                    dobry_wynik = 5;
-                    najlepszy_wynik = 6;
-                    liczba_krokow = 12;
+                    dobry_wynik = 14;
+                    najlepszy_wynik = 54;
+                    liczba_krokow = 4;
                     dane = new int[4, 4] {
-                    {0,1,-1,9},
-                    {1,0,1,0},
-                    {0,1,0,1},
-                    {0,0,1,0}};
+                    {1,2,3,4},
+                    {5,6,7,8},
+                    {9,10,11,12},
+                    {13,14,15,16}};
                 break;
                 case 5:
                     szerokosc = 5;

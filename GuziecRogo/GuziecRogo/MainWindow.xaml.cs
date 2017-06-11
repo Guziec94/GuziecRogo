@@ -24,6 +24,7 @@ namespace GuziecRogo
         public int dobry_wynik;
         public int najlepszy_wynik;
         public int liczba_krokow;
+        public int start;
         public int[,] dane;//tablica zawierająca dane z DataGrid2d dane[wiersz,kolumna]
         public int[] sciezka_do_wyswietlenia;//tablica przechowujaca rozwiazanie gotowe do wyswietlenia (format: [kolumna, wiersz]*ilosc_krokow)
 
@@ -72,7 +73,7 @@ namespace GuziecRogo
         }
         private void koloruj_komorke(int kolumna, int wiersz, int wartosc)
         {
-            DataGridRow row = dataGrid2D.ItemContainerGenerator.ContainerFromItem(dataGrid2D.Items[wiersz]) as DataGridRow;            
+            DataGridRow row = dataGrid2D.ItemContainerGenerator.ContainerFromItem(dataGrid2D.Items[wiersz]) as DataGridRow;
             DataGridCell cell = dataGrid2D.Columns[kolumna].GetCellContent(row).Parent as DataGridCell;
             if (wartosc > 0)//zwykle pole
             {
@@ -121,7 +122,7 @@ namespace GuziecRogo
                 {
                     dataGrid2D.FontSize = (double)550 / szerokosc * 0.5;
                 }
-                if (szerokosc <= 1 || wysokosc <= 1) 
+                if (szerokosc <= 1 || wysokosc <= 1)
                 {
                     throw new Exception();
                 }
@@ -129,7 +130,7 @@ namespace GuziecRogo
                 dataGrid2D.ItemsSource2D = dane;
                 znajdz_rozwiazanie.IsEnabled = true;
             }
-            catch(Exception)
+            catch (Exception)
             {
                 MessageBox.Show("Podano nieprawidłowe wymiary tabeli.");
             }
@@ -173,10 +174,10 @@ namespace GuziecRogo
                     koloruj_komorke(kolumna, wiersz, '1');
                 }
             }
-            catch(Exception)
+            catch (Exception)
             { }
         }
-       
+
         private void wyswietl_przykladowe_dane()
         {
             szerokosc_textBox.Text = szerokosc.ToString();
@@ -228,6 +229,7 @@ namespace GuziecRogo
 
         private void znajdz_rozwiazanie_Click(object sender, RoutedEventArgs e)
         {
+            sciezka_do_wyswietlenia = null;
             try//sprawdzenie poprawnosci wprowadzonych danych
             {
                 dobry_wynik = int.Parse(dobrze_textBox.Text);
@@ -237,15 +239,29 @@ namespace GuziecRogo
                 {
                     throw new Exception();
                 }
+                if (uproszczone_wyszukiwanie.IsChecked == true)
+                {
+                    start = int.Parse(uproszczone_wyszukiwanie_TextBox.Text);
+                    if (start < 0 || start >= szerokosc * wysokosc)
+                    {
+                        throw new Exception();
+                    }
+                }
             }
             catch (Exception)
             {
-                MessageBox.Show("Wystąpił błąd, możliwości to:\n- podano nieprawidłowe progi punktowe dla tej gry\n- podano zbyt małą liczbę kroków,\n- liczba kroków jest nieparzysta, czyli gra jest nierozwiązywalna\n- liczba kroków jest większa niż liczba pól.");
+                MessageBox.Show("Wystąpił błąd, możliwości to:\n- podano nieprawidłowe progi punktowe dla tej gry\n- podano zbyt małą liczbę kroków,\n- liczba kroków jest nieparzysta, czyli gra jest nierozwiązywalna\n- liczba kroków jest większa niż liczba pól,\n- warość pola uproszczone wyszukiwanie jest błędna (<0 lub >=" + (szerokosc * wysokosc) + ").");
+                znajdz_rozwiazanie.Content = "Znajdź rozwiązanie";
                 return;
             }
 
             int iterator = 0;
             int[] dane_z_tabeli = dataGrid2D.ItemsSource2D.Cast<int>().ToArray<int>();//załadowanie danych z tabeli do tablicy intów
+            if (dane_z_tabeli[start] < 0 && uproszczone_wyszukiwanie.IsChecked == true)
+            {
+                MessageBox.Show("Punkt startowy w uproszczonym wyszukiwaniu musi być przechodnim polem.");
+                return;
+            }
             dane = new int[wysokosc, szerokosc];
             for (int j = 0; j < wysokosc; j++)//wierszem 
             {
@@ -264,26 +280,24 @@ namespace GuziecRogo
             if (PlEngine.IsInitialized)
             {
                 String lista_wartosci = tablica_prologowa(dane_z_tabeli);//prologowa lista zawierająca wartości wszystkich pól
-                String zapytanie = "szukaj(" + szerokosc + "," + wysokosc + "," + liczba_krokow + "," + dobry_wynik + "," + najlepszy_wynik + "," + lista_wartosci + ",Lista).";
-                //szukaj(Szerokosc, Wysokosc, LiczbaKrokow, Dobrze, Najlepiej, ListaWartosci, ListaIndeksow).
-                List<rozwiazanie> cos = new List<rozwiazanie>();//jedynie do testów
-
-                /*var q = new PlQuery(zapytanie);
-                try
+                String zapytanie = "";
+                if (uproszczone_wyszukiwanie.IsChecked == true)
                 {
-                    while (q.NextSolution())
-                    {
-                        cos.Add(q.Variables["Lista"].ToString());
-                        znalezione_rozwiazania.Items.Add(q.Variables["Lista"].ToString());
-                    }
-                }*/
+                    zapytanie = "szukaj_po_glowie(" + szerokosc + "," + wysokosc + "," + liczba_krokow + "," + dobry_wynik + "," + najlepszy_wynik + "," + lista_wartosci + ",Lista," + start + ").";
+                }
+                else
+                {
+                    zapytanie = "szukaj(" + szerokosc + "," + wysokosc + "," + liczba_krokow + "," + dobry_wynik + "," + najlepszy_wynik + "," + lista_wartosci + ",Lista).";
+                }
+                List<rozwiazanie> cos = new List<rozwiazanie>();//jedynie do testów
                 try
                 {
                     using (var q = new PlQuery(zapytanie))
                     {
                         foreach (PlQueryVariables v in q.SolutionVariables)
                         {
-                            rozwiazanie znalezione_rozwiazanie = new rozwiazanie(v["Lista"].ToString(), dane_z_tabeli);
+                            string test = v["Lista"].ToString();
+                            rozwiazanie znalezione_rozwiazanie = new rozwiazanie(test, dane_z_tabeli);
                             cos.Add(znalezione_rozwiazanie);
                         }
                     }
@@ -294,7 +308,7 @@ namespace GuziecRogo
                     {
                         cos = cos.OrderBy(x => x.wynik).ThenBy(x => x.sciezka).ToList();
                         znalezione_rozwiazania.ItemsSource = cos;
-                        MessageBox.Show("Koniec");
+                        MessageBox.Show("Zakończono wyszukiwanie.");
                     }
                     else
                     {
@@ -318,7 +332,7 @@ namespace GuziecRogo
 
         private void wyswietl_rozwiazanie_Click(object sender, RoutedEventArgs e)
         {
-            if (znalezione_rozwiazania.HasItems)
+            if (znalezione_rozwiazania.HasItems && sciezka_do_wyswietlenia != null) 
             {
                 int wiersz, kolumna;
                 foreach (int numer_komorki in sciezka_do_wyswietlenia)
@@ -327,6 +341,18 @@ namespace GuziecRogo
                     kolumna = numer_komorki - wiersz * szerokosc;
                     koloruj_komorke(kolumna, wiersz, '2');
                 }
+            }
+        }
+
+        private void uproszczone_wyszukiwanie_Click(object sender, RoutedEventArgs e)
+        {
+            if (uproszczone_wyszukiwanie.IsChecked == true)
+            {
+                uproszczone_wyszukiwanie_TextBox.IsEnabled = true;
+            }
+            else
+            {
+                uproszczone_wyszukiwanie_TextBox.IsEnabled = false;
             }
         }
     }
