@@ -134,24 +134,6 @@ namespace GuziecRogo
             {
                 MessageBox.Show("Podano nieprawidłowe wymiary tabeli.");
             }
-            /*DynamicGrid.Children.Clear();
-            DynamicGrid.ColumnDefinitions.Clear();
-            DynamicGrid.RowDefinitions.Clear();
-            for (int i = 0; i < szerokosc; i++)
-            {
-                ColumnDefinition gridCol = new ColumnDefinition();
-                DynamicGrid.ColumnDefinitions.Add(gridCol);
-            }
-            for (int i = 0; i < wysokosc; i++)
-            {
-                RowDefinition gridRow = new RowDefinition();
-                DynamicGrid.RowDefinitions.Add(gridRow);
-            }
-            DynamicGrid.Width = 578;
-            DynamicGrid.HorizontalAlignment = HorizontalAlignment.Center;
-            DynamicGrid.VerticalAlignment = VerticalAlignment.Center;
-            DynamicGrid.ShowGridLines = true;
-            DynamicGrid.Background = new SolidColorBrush(Colors.LightSteelBlue);*/
         }
 
         private void dataGrid2D_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
@@ -283,7 +265,7 @@ namespace GuziecRogo
                 String zapytanie = "";
                 if (uproszczone_wyszukiwanie.IsChecked == true)
                 {
-                    zapytanie = "szukaj_po_glowie(" + szerokosc + "," + wysokosc + "," + liczba_krokow + "," + dobry_wynik + "," + najlepszy_wynik + "," + lista_wartosci + ",Lista," + start + ").";
+                    zapytanie = "szukaj_po_glowie(" + szerokosc + "," + wysokosc + "," + liczba_krokow + "," + dobry_wynik + "," + najlepszy_wynik + "," + lista_wartosci + "," + start + ",Lista).";
                 }
                 else
                 {
